@@ -1,32 +1,31 @@
 import express from "express";
 import { bubbleSort } from "./bubbleSort";
-import { getArray, saveSort, initDatabase } from "./db";
+import db from "./controllers/db.controller";
 
 const app = express();
 app.use(express.json());
 
-initDatabase().catch(console.error);
+db.init().catch(console.error);
 
 app.get("/", (req, res) => {
     res.sendFile("index.html", { root: "./src/public" });
 });
-app.get("/:arrayId", async (req, res) => {
-    const { arrayId } = req.params;
-    const array = await getArray(parseInt(arrayId));
-    res.json(array);
+
+app.get("/:id", async (req, res) => {
+    const nums = await db.get(parseInt(req.params.id));
+    if (!nums) return res.status(404).json({ error: 'Not found' });
+    res.json(nums);
 });
 
 app.post("/sort", async (req, res) => {
     const { array } = req.body;
-    
     if (!array?.length || !Array.isArray(array)) {
-        return res.status(400).json({ error: 'Неверный массив' });
+        return res.status(400).json({ error: 'Invalid array' });
     }
-
-    const sortedArray = bubbleSort(array);
-    const arrayId = await saveSort(sortedArray);
     
-    res.json({ sortedArray, arrayId });
+    const sorted = bubbleSort(array);
+    const id = await db.save(sorted);
+    res.json({ id, sorted });
 });
 
-app.listen(3000, () => console.log('Сервер запущен на 3000 порту'));
+app.listen(3000, () => console.log('Server is running on port 3000'));
