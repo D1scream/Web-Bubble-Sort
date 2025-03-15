@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .error { color: red }
+    </style>
+</head>
+<body>
+    <h1>Array Sort</h1>
+    <input placeholder="1,2,3" id="i">
+    <button onclick="s()">Sort</button>
+    <div id="r"></div>
+
+    <script>
+        async function s() {
+            const r = document.getElementById('r');
+            const n = document.getElementById('i').value.split(',').map(Number);
+            
+            if (n.some(isNaN)) {
+                r.innerHTML = '<span class="error">Only numbers!</span>';
+                return;
+            }
+
+            try {
+                const {sortedArray, arrayId} = await (await fetch('/sort', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({array: n})
+                })).json();
+
+                r.innerHTML = `Sorted Array: ${sortedArray}<br>ID: ${arrayId}`;
+            } catch (e) {
+                r.innerHTML = '<span class="error">Error!</span>';
+            }
+        }
+    </script>
+</body>
+</html> 
