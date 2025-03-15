@@ -13,7 +13,9 @@ app.get("/", (req, res) => {
 
 app.get("/:id", async (req, res) => {
     const nums = await db.get(parseInt(req.params.id));
-    if (!nums) return res.status(404).json({ error: 'Not found' });
+    if (!nums) {
+        return res.status(404).json({ error: 'Not found' });
+    }
     res.json(nums);
 });
 
