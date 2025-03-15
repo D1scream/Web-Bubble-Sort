@@ -20,7 +20,7 @@ app.get("/:id", async (req, res) => {
 });
 
 app.post("/sort", async (req, res) => {
-    const { array } = req.body;
+    const array = req.body.array;
     if (!array?.length || !Array.isArray(array)) {
         return res.status(400).json({ error: 'Invalid array' });
     }

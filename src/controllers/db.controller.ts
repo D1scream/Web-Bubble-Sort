@@ -25,6 +25,7 @@ class DbController {
     }
 
     async save(nums: number[]) {
+        // Получение свободного array_id
         const result = await pool.query('SELECT MAX(array_id) FROM sorted_arrays')
         const id = (result.rows[0].max || 0) + 1
         for (const num of nums) {
