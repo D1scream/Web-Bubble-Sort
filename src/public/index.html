@@ -9,29 +9,31 @@
 <body>
     <h1>Array Sort</h1>
     <input placeholder="1,2,3" id="i">
-    <button onclick="s()">Sort</button>
+    <button onclick="sortArray()">Sort</button>
     <div id="r"></div>
 
     <script>
-        async function s() {
-            const r = document.getElementById('r');
-            const n = document.getElementById('i').value.split(',').map(Number);
+        async function sortArray() {
+            const resultElement = document.getElementById('r');
+            const inputElement = document.getElementById('i');
+            const numbers = inputElement.value.split(',').map(Number);
             
-            if (n.some(isNaN)) {
-                r.innerHTML = '<span class="error">Only numbers!</span>';
+            if (numbers.some(isNaN)) {
+                resultElement.innerHTML = '<span class="error">Enter only numbers!</span>';
                 return;
             }
 
             try {
-                const {sortedArray, arrayId} = await (await fetch('/sort', {
+                const response = await fetch('/sort', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({array: n})
-                })).json();
-
-                r.innerHTML = `Sorted Array: ${sortedArray}<br>ID: ${arrayId}`;
-            } catch (e) {
-                r.innerHTML = '<span class="error">Error!</span>';
+                    body: JSON.stringify({array: numbers})
+                });
+                
+                const {id, sorted} = await response.json();
+                resultElement.innerHTML = `Sorted array: ${sorted}<br>ID: ${id}`;
+            } catch (error) {
+                resultElement.innerHTML = '<span class="error">An error occurred!</span>';
             }
         }
     </script>
